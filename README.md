@@ -1,156 +1,154 @@
-# CAD 图库管理插件
+﻿# CadLibraryManager
 
-这是一个 AutoCAD 2026 C#/.NET 8 插件，用于管理本地 DWG 图库并把选中的 DWG 作为图块插入当前图纸。
+> AutoCAD 本地 DWG 图库管理插件 — 浏览、搜索、分类、一键插入图块
 
-## 功能
+[![AutoCAD](https://img.shields.io/badge/AutoCAD-2018--2026-blue)]()
+[![.NET](https://img.shields.io/badge/.NET-4.8%20%7C%208.0-purple)]()
+[![License](https://img.shields.io/badge/License-MIT-green)]()
 
-- AutoCAD 命令 `W1` 打开图库面板。
-- 支持选择本地图库目录。
-- 自动递归扫描目录下的 `*.dwg` 文件。
-- 支持 DWG 内置缩略图预览。
-- 支持按名称、分类、标签搜索。
-- 支持分类、标签、显示名称、收藏。
-- 支持只看收藏。
-- 支持批量导入 DWG 文件。
-- 支持重命名 DWG 文件并同步元数据。
-- 支持设置插入比例、旋转角度、目标图层。
-- 使用本地 LiteDB 数据库保存图库元数据。
-- 双击或点击“插入”后，在当前图纸中指定插入点并插入图块。
+## 功能特性
+
+| 功能 | 说明 |
+|------|------|
+| 📂 图库浏览 | 递归扫描目录，树形文件夹 + 缩略图网格 |
+| 🔍 搜索筛选 | 按名称、分类、标签实时搜索 |
+| ⭐ 收藏管理 | 一键收藏常用图块，支持只看收藏 |
+| 🏷️ 元数据 | 显示名称、分类、标签，LiteDB 本地存储 |
+| 🖼️ 缩略图 | 读取 DWG 内置预览图，支持手动生成 PNG |
+| 📥 批量导入 | 批量选择外部 DWG 复制到图库目录 |
+| ✏️ 重命名 | 重命名 DWG 文件并同步元数据 |
+| 🧩 图块插入 | Jig 交互指定插入点，支持比例/旋转/图层 |
+| 🔄 连续插入 | 勾选后可连续放置同一图块 |
+| 💣 解析插入 | 可选将图块炸开为独立图元 |
+
+## 支持版本
+
+| AutoCAD 版本 | 框架 | 状态 |
+|-------------|------|------|
+| 2018 - 2024 | .NET Framework 4.8 | ✅ |
+| 2025 - 2026 | .NET 8.0 | ✅ |
+
+## 快速开始
+
+### 方式一：自动安装（推荐）
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\install-autoload.ps1
+```
+
+脚本会自动查找 AutoCAD 安装目录、编译项目、安装到 `.bundle` 目录。重启 AutoCAD 后输入 `W1` 即可。
+
+### 方式二：手动加载
+
+```powershell
+# 编译
+dotnet build CadLibraryManager.csproj -c Release
+
+# 在 AutoCAD 中执行
+NETLOAD → 选择 bin\Release\net8.0-windows\CadLibraryManager.dll
+W1      → 打开图库面板
+```
+
+### 方式三：手动安装到 .bundle
+
+```
+%APPDATA%\Autodesk\ApplicationPlugins\CadLibraryManager.bundle\
+├── PackageContents.xml
+└── Contents\Windows\
+    ├── CadLibraryManager.dll
+    └── LiteDB.dll
+```
+
+## 编译
+
+需要 AutoCAD API DLL（`AcMgd.dll`、`AcDbMgd.dll`、`AcCoreMgd.dll`）：
+
+```powershell
+# AutoCAD 2026（默认路径）
+dotnet build CadLibraryManager.csproj -c Release
+
+# 指定 AutoCAD 安装目录
+dotnet build CadLibraryManager.csproj -c Release -p:AutoCADInstallDir="C:\Program Files\Autodesk\AutoCAD 2025"
+
+# AutoCAD 2018-2024（需要对应版本 API DLL）
+dotnet build CadLibraryManager.CAD2020.csproj -c Release -p:AutoCADInstallDir="C:\Program Files\Autodesk\AutoCAD 2020"
+```
+
+## 使用说明
+
+1. 执行命令 `W1` 打开图库面板
+2. 点击 **目录** 选择 DWG 图库文件夹
+3. 左侧树形浏览文件夹，右侧显示缩略图网格
+4. 选中图块后设置比例、旋转角度、图层
+5. 双击或点击 **插入** → 在图纸中指定插入点
+
+### 元数据字段
+
+- **显示名称** — 列表中展示的名称，可不同于文件名
+- **分类** — 按构件类型分组（门窗、节点、家具…）
+- **标签** — 逗号分隔，支持多标签搜索
+- **收藏** — 星标常用图块，支持快速筛选
+
+### 插入设置
+
+- **比例** — 百分比输入，`100` = 原比例，`50` = 0.5 倍
+- **旋转** — 角度制，默认 `0°`
+- **图层** — 留空使用当前图层，填写后自动创建不存在的图层
+- **连续插入** — 勾选后可反复放置同一图块
+- **解析插入** — 将图块炸开为独立图元
 
 ## 项目结构
 
-- `CadLibraryManager.csproj`: 插件项目文件。
-- `src/Commands.cs`: AutoCAD 命令入口。
-- `src/LibraryControl.cs`: 图库管理面板 UI。
-- `src/BlockInserter.cs`: DWG 插入为图块的核心逻辑。
-- `src/LibrarySettings.cs`: 图库目录配置保存。
-- `src/LibraryDatabase.cs`: 本地元数据库访问。
-- `src/DwgPreviewReader.cs`: 读取 DWG 内置缩略图。
+```
+CadLibraryManager/
+├── src/
+│   ├── Commands.cs          # AutoCAD 命令入口 (W1)
+│   ├── Plugin.cs            # IExtensionApplication 实现
+│   ├── LibraryPalette.cs    # PaletteSet 面板管理
+│   ├── LibraryControl.cs    # 主界面 UI（WinForms）
+│   ├── BlockInserter.cs     # 图块插入 + Jig 交互
+│   ├── BlockMaker.cs        # 选集导出为 DWG 图块
+│   ├── DwgPreviewReader.cs  # DWG 缩略图读取/生成
+│   ├── LibraryDatabase.cs   # LiteDB 元数据库
+│   ├── LibrarySettings.cs   # 配置持久化
+│   ├── LibraryItem.cs       # 图库项数据模型
+│   ├── LibraryMetadata.cs   # 元数据实体
+│   ├── LibraryViewState.cs  # 视图状态持久化
+│   ├── InsertOptions.cs     # 插入参数
+│   └── PromptText.cs        # 输入对话框
+├── bundle/
+│   └── PackageContents.xml  # .bundle 自动加载清单
+├── installer/
+│   ├── Program.cs           # 安装程序（单文件 EXE）
+│   └── CadLibraryManagerInstaller.csproj
+├── tools/
+│   ├── install-autoload.ps1     # 一键安装脚本
+│   ├── uninstall-autoload.ps1   # 卸载脚本
+│   ├── build-installer.ps1      # 构建安装程序
+│   └── build-installer-cad2020.ps1
+├── CadLibraryManager.csproj         # net8.0 (AutoCAD 2025-2026)
+└── CadLibraryManager.CAD2020.csproj # net48 (AutoCAD 2018-2024)
+```
 
-## 编译前配置
+## 数据存储
 
-项目默认按 AutoCAD 2026 路径查找 API DLL：
+| 文件 | 位置 | 说明 |
+|------|------|------|
+| 图库目录配置 | `%APPDATA%\CadLibraryManager\library-folder.txt` | 图库根目录路径 |
+| 元数据库 | `%APPDATA%\CadLibraryManager\library.db` | LiteDB 数据库 |
+| 视图状态 | `%APPDATA%\CadLibraryManager\view-state.json` | 窗口布局/筛选状态 |
+| 缩略图缓存 | 内存 | 按需加载，关闭即释放 |
+
+## 卸载
 
 ```powershell
-C:\Program Files\Autodesk\AutoCAD 2026
+# 卸载自动加载
+powershell -ExecutionPolicy Bypass -File tools\uninstall-autoload.ps1
+
+# 删除数据
+Remove-Item "$env:APPDATA\CadLibraryManager" -Recurse -Force
 ```
 
-如果你的 AutoCAD 安装目录不同，编译时传入 `AutoCADInstallDir`：
+## 许可证
 
-```powershell
-dotnet build "D:\03 开发\CadLibraryManager\CadLibraryManager.csproj" -p:AutoCADInstallDir="C:\Program Files\Autodesk\AutoCAD 2025"
-```
-
-该目录需要包含：
-
-- `AcMgd.dll`
-- `AcDbMgd.dll`
-- `AcCoreMgd.dll`
-
-## 加载插件
-
-1. 编译项目。
-2. 打开 AutoCAD。
-3. 执行命令 `NETLOAD`。
-4. 选择编译输出的 `CadLibraryManager.dll`。
-5. 执行命令 `W1` 打开图库面板。
-
-## 自动加载安装
-
-项目已提供 AutoCAD `.bundle` 自动加载工具，安装后 AutoCAD 启动时会自动加载插件。
-
-默认安装到当前用户目录，不需要管理员权限。脚本会优先自动查找 `C:\Program Files\Autodesk` 下的 AutoCAD 安装目录：
-
-```powershell
-powershell -ExecutionPolicy Bypass -File "D:\03 开发\CadLibraryManager\tools\install-autoload.ps1"
-```
-
-如果自动查找失败，手动传入 AutoCAD 安装目录：
-
-```powershell
-powershell -ExecutionPolicy Bypass -File "D:\03 开发\CadLibraryManager\tools\install-autoload.ps1" -AutoCADInstallDir "C:\Program Files\Autodesk\AutoCAD 2025"
-```
-
-如果已经手动编译过，可以跳过构建，只复制现有输出：
-
-```powershell
-powershell -ExecutionPolicy Bypass -File "D:\03 开发\CadLibraryManager\tools\install-autoload.ps1" -NoBuild
-```
-
-安装到所有用户目录需要管理员权限：
-
-```powershell
-powershell -ExecutionPolicy Bypass -File "D:\03 开发\CadLibraryManager\tools\install-autoload.ps1" -Scope AllUsers -AutoCADInstallDir "C:\Program Files\Autodesk\AutoCAD 2025"
-```
-
-卸载自动加载：
-
-```powershell
-powershell -ExecutionPolicy Bypass -File "D:\03 开发\CadLibraryManager\tools\uninstall-autoload.ps1"
-```
-
-自动加载目录：
-
-```text
-%APPDATA%\Autodesk\ApplicationPlugins\CadLibraryManager.bundle
-```
-
-`.bundle` 清单文件：
-
-```text
-bundle\PackageContents.xml
-```
-
-安装完成后重启 AutoCAD，再执行 `W1` 打开图库面板。
-
-## 图库目录
-
-首次启动会默认使用：
-
-```text
-我的文档\CadLibraryManager
-```
-
-也可以在面板中点击“选择图库目录”切换到你的 DWG 图库文件夹。
-
-配置保存位置：
-
-```text
-%APPDATA%\CadLibraryManager\library-folder.txt
-```
-
-元数据库保存位置：
-
-```text
-%APPDATA%\CadLibraryManager\library.db
-```
-
-## 使用方式
-
-- “目录”：切换图库根目录。
-- “刷新”：重新扫描当前图库目录。
-- “导入”：批量选择外部 DWG 并复制到图库目录。
-- “重命名”：重命名当前选中的 DWG 文件。
-- “保存”：保存当前选中项的显示名称、分类、标签、收藏状态。
-- “插入”：按当前比例、角度、图层设置插入选中的 DWG。
-
-## 元数据字段
-
-- 显示名称：列表中展示的名称，不要求等于文件名。
-- 分类：用于按构件类型或专业分组，例如门窗、节点、家具。
-- 标签：用逗号分隔，例如立面,通用,常用。
-- 收藏：用于快速筛选常用图块。
-
-## 插入设置
-
-- 插入比例：界面按百分比输入，默认 `100` 表示原比例，`50` 表示 0.5 倍。
-- 旋转角度：单位为度，默认 `0`。
-- 插入图层：为空时使用当前图层；填写后如果图层不存在会自动创建。
-
-## 已实现扩展方向
-
-- 增加 DWG 缩略图预览。
-- 增加分类、标签、收藏。
-- 增加批量导入和重命名。
-- 增加块比例、旋转角度、图层选择。
-- 使用 LiteDB 保存图库元数据。
+[MIT License](LICENSE)
