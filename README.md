@@ -1,4 +1,6 @@
-﻿# CadLibraryManager
+﻿<p align="center"><img src=".github/banner.svg" width="100%" alt="CadLibraryManager"></p>
+
+# CadLibraryManager
 
 > AutoCAD 本地 DWG 图库管理插件 — 浏览、搜索、分类、一键插入图块
 
@@ -148,6 +150,10 @@ powershell -ExecutionPolicy Bypass -File tools\uninstall-autoload.ps1
 # 删除数据
 Remove-Item "$env:APPDATA\CadLibraryManager" -Recurse -Force
 ```
+
+## 更新日志
+
+详见 [CHANGELOG.md](CHANGELOG.md)
 
 ## 许可证
 
