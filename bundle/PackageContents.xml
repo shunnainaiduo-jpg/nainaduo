@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ApplicationPackage
+  SchemaVersion="1.0"
+  AutodeskProduct="AutoCAD"
+  ProductType="Application"
+  Name="CadLibraryManager"
+  Description="Local DWG library manager for preview, metadata, favorites, and block insertion."
+  AppVersion="1.0.0"
+  ProductCode="{B2A15E19-7F37-4F25-AE23-8ED69805C5E7}"
+  UpgradeCode="{17FDC954-F91C-4E52-A5DC-A5E577A9F5C9}"
+  Author="CadLibraryManager">
+  <CompanyDetails Name="CadLibraryManager" />
+  <Components>
+    <RuntimeRequirements OS="Win64" Platform="AutoCAD" />
+    <ComponentEntry
+      AppName="CadLibraryManager"
+      Version="1.0.0"
+      AppType=".Net"
+      ModuleName="./Contents/Windows/CadLibraryManager.dll"
+      AppDescription="CAD library manager plugin"
+      LoadOnAutoCADStartup="True"
+      LoadOnCommandInvocation="True">
+      <Commands GroupName="CadLibraryManagerCommands">
+        <Command Local="W1" Global="W1" />
+      </Commands>
+    </ComponentEntry>
+  </Components>
+</ApplicationPackage>

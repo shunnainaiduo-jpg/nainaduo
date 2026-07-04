@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ApplicationPackage
+  SchemaVersion="1.0"
+  AutodeskProduct="AutoCAD"
+  ProductType="Application"
+  Name="CadLibraryManager CAD2020"
+  Description="Local DWG library manager for AutoCAD 2020."
+  AppVersion="1.0.0"
+  ProductCode="{E4D7D7F7-9673-4C4D-B961-CBBE7A7B0858}"
+  UpgradeCode="{343C2976-5538-42EE-9C61-8D49D4D96F5B}"
+  Author="CadLibraryManager">
+  <CompanyDetails Name="CadLibraryManager" />
+  <Components>
+    <RuntimeRequirements OS="Win64" Platform="AutoCAD" SeriesMin="R23.1" SeriesMax="R23.1" />
+    <ComponentEntry
+      AppName="CadLibraryManager"
+      Version="1.0.0"
+      AppType=".Net"
+      ModuleName="./Contents/Windows/CadLibraryManager.dll"
+      AppDescription="CAD library manager plugin for AutoCAD 2020"
+      LoadOnAutoCADStartup="True"
+      LoadOnCommandInvocation="True">
+      <Commands GroupName="CadLibraryManagerCommands">
+        <Command Local="W1" Global="W1" />
+      </Commands>
+    </ComponentEntry>
+  </Components>
+</ApplicationPackage>
