@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -550,6 +550,7 @@ internal sealed class LibraryControl : UserControl
         }
 
         _rootFolder = selectedRoot;
+        _currentFolder = _rootFolder;
         LibrarySettings.SaveLibraryFolder(_rootFolder);
         _folderLoadCts?.Cancel();
         ClearThumbnailCache();
@@ -1031,6 +1032,10 @@ internal sealed class LibraryControl : UserControl
         }
         LibrarySettings.SaveLibraryFolder(dialog.SelectedPath);
         _libraryRoots = LibrarySettings.GetLibraryRoots();
+        _rootFolder = dialog.SelectedPath;
+        _currentFolder = _rootFolder;
+        _viewState.CurrentFolder = _currentFolder;
+        _viewState.RootFolder = _rootFolder;
         ResetFilters();
         LoadLibrary();
     }
