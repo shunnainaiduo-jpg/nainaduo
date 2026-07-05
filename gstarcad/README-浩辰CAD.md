@@ -32,9 +32,23 @@ powershell -ExecutionPolicy Bypass -File .\一键安装浩辰CAD版.ps1
 
 - 构建 `CadLibraryManager.GstarCAD.dll`
 - 安装到 `%APPDATA%\Gstarsoft\GstarCAD\ApplicationPlugins\CadLibraryManager.GstarCAD`
-- 扫描 `HKCU:\SOFTWARE\Gstarsoft\GstarCAD` 下的浩辰/GstarCAD 配置，并写入 `Applications\CadLibraryManager.GstarCAD` 自动加载项
+- 默认不写入自动加载注册表，避免浩辰/GstarCAD 启动时卡死
 
-如果脚本提示没有找到 GstarCAD 注册表配置，请先启动一次浩辰/GstarCAD，然后重新运行安装脚本。
+安装后先在浩辰/GstarCAD 中执行 `NETLOAD`，选择：
+
+```text
+%APPDATA%\Gstarsoft\GstarCAD\ApplicationPlugins\CadLibraryManager.GstarCAD\CadLibraryManager.GstarCAD.dll
+```
+
+然后输入 `W1` 打开图库面板。
+
+如果手动 `NETLOAD` 验证正常，确实需要自动加载，可以显式启用命令触发加载：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\install-gstarcad-autoload.ps1 -NoBuild -EnableAutoload
+```
+
+注意：不要在未验证前启用自动加载。如果启用后浩辰/GstarCAD 启动卡死，请运行下面的卸载脚本清理自动加载项。
 
 卸载：
 

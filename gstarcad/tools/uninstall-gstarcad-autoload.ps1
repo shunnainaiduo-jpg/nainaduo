@@ -11,9 +11,18 @@ if ([string]::IsNullOrWhiteSpace($InstallRoot)) {
 }
 
 $appKeyName = 'CadLibraryManager.GstarCAD'
-$root = 'HKCU:\SOFTWARE\Gstarsoft\GstarCAD'
+$registryRoots = @(
+    'HKCU:\SOFTWARE\Gstarsoft\GstarCAD',
+    'HKLM:\SOFTWARE\Gstarsoft\GstarCAD',
+    'HKCU:\SOFTWARE\WOW6432Node\Gstarsoft\GstarCAD',
+    'HKLM:\SOFTWARE\WOW6432Node\Gstarsoft\GstarCAD'
+)
 
-if (Test-Path -LiteralPath $root) {
+foreach ($root in $registryRoots) {
+    if (-not (Test-Path -LiteralPath $root)) {
+        continue
+    }
+
     foreach ($versionKey in Get-ChildItem -LiteralPath $root -ErrorAction SilentlyContinue) {
         foreach ($profileKey in Get-ChildItem -LiteralPath $versionKey.PSPath -ErrorAction SilentlyContinue) {
             $appKey = Join-Path (Join-Path $profileKey.PSPath 'Applications') $appKeyName

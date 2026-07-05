@@ -6,6 +6,8 @@ param(
 
     [switch]$NoBuild,
 
+    [switch]$EnableAutoload,
+
     [switch]$AllDetectedProfiles
 )
 
@@ -61,6 +63,15 @@ $installedDll = Join-Path $InstallRoot 'CadLibraryManager.GstarCAD.dll'
 $applicationsKeyName = 'Applications'
 $appKeyName = 'CadLibraryManager.GstarCAD'
 
+if (-not $EnableAutoload) {
+    Write-Output "Installed files: $InstallRoot"
+    Write-Output "Autoload was not enabled to avoid slowing or freezing GstarCAD startup."
+    Write-Output "In GstarCAD, run NETLOAD and select: $installedDll"
+    Write-Output "Then run W1."
+    Write-Output "After manual NETLOAD is verified, rerun this script with -EnableAutoload if you want command-triggered autoload."
+    exit 0
+}
+
 function Get-GstarCadProfileKeys {
     $root = 'HKCU:\SOFTWARE\Gstarsoft\GstarCAD'
     if (-not (Test-Path -LiteralPath $root)) {
@@ -95,9 +106,15 @@ foreach ($profileKey in $profileKeys) {
     $appKey = Join-Path $applicationsKey $appKeyName
     New-Item -Path $applicationsKey -Force | Out-Null
     New-Item -Path $appKey -Force | Out-Null
+    New-ItemProperty -Path $appKey -Name 'DESCRIPTION' -PropertyType String -Value 'CAD library manager plugin for GstarCAD' -Force | Out-Null
+    New-ItemProperty -Path $appKey -Name 'LOADCTRLS' -PropertyType DWord -Value 2 -Force | Out-Null
     New-ItemProperty -Path $appKey -Name 'Managed' -PropertyType DWord -Value 1 -Force | Out-Null
     New-ItemProperty -Path $appKey -Name 'Loader' -PropertyType String -Value $installedDll -Force | Out-Null
-    Write-Output "Registered autoload: $appKey"
+
+    $commandsKey = Join-Path $appKey 'Commands'
+    New-Item -Path $commandsKey -Force | Out-Null
+    New-ItemProperty -Path $commandsKey -Name 'W1' -PropertyType DWord -Value 1 -Force | Out-Null
+    Write-Output "Registered command-triggered autoload: $appKey"
 }
 
 Write-Output "Installed files: $InstallRoot"
