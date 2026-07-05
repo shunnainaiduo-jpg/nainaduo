@@ -13,9 +13,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="obj\**\*.cs" />
     <Compile Remove="installer\**\*.cs" />
+    <Compile Remove="gstarcad\**\*.cs" />
+    <EmbeddedResource Remove="obj\**\*" />
     <EmbeddedResource Remove="installer\**\*" />
+    <EmbeddedResource Remove="gstarcad\**\*" />
+    <None Remove="obj\**\*" />
     <None Remove="installer\**\*" />
+    <None Remove="gstarcad\**\*" />
   </ItemGroup>
 
   <ItemGroup>

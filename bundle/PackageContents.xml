@@ -4,20 +4,20 @@
   AutodeskProduct="AutoCAD"
   ProductType="Application"
   Name="CadLibraryManager"
-  Description="Local DWG library manager for preview, metadata, favorites, and block insertion."
+  Description="Local DWG library manager for AutoCAD 2025-2026."
   AppVersion="1.0.0"
   ProductCode="{B2A15E19-7F37-4F25-AE23-8ED69805C5E7}"
   UpgradeCode="{17FDC954-F91C-4E52-A5DC-A5E577A9F5C9}"
   Author="CadLibraryManager">
   <CompanyDetails Name="CadLibraryManager" />
   <Components>
-    <RuntimeRequirements OS="Win64" Platform="AutoCAD" />
+    <RuntimeRequirements OS="Win64" Platform="AutoCAD" SeriesMin="R25.0" SeriesMax="R25.1" />
     <ComponentEntry
       AppName="CadLibraryManager"
       Version="1.0.0"
       AppType=".Net"
       ModuleName="./Contents/Windows/CadLibraryManager.dll"
-      AppDescription="CAD library manager plugin"
+      AppDescription="CAD library manager plugin for AutoCAD 2025-2026"
       LoadOnAutoCADStartup="True"
       LoadOnCommandInvocation="True">
       <Commands GroupName="CadLibraryManagerCommands">

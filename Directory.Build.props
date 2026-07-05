@@ -1,0 +1,9 @@
+<Project>
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'CadLibraryManager'">
+    <BaseIntermediateOutputPath>obj\CadLibraryManager\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'CadLibraryManager.CAD2020'">
+    <BaseIntermediateOutputPath>obj\CadLibraryManager.CAD2020\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+</Project>

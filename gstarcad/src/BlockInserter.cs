@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.IO;
-using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
-using Autodesk.AutoCAD.Geometry;
+using Gssoft.Gscad.ApplicationServices;
+using Gssoft.Gscad.DatabaseServices;
+using Gssoft.Gscad.EditorInput;
+using Gssoft.Gscad.Geometry;
 
 namespace CadLibraryManager;
 
@@ -26,7 +26,7 @@ internal static class BlockInserter
 
         if (!IsValidLayerName(options.LayerName))
         {
-            editor.WriteMessage($"\nLayer name contains invalid AutoCAD characters: {options.LayerName}");
+            editor.WriteMessage($"\nLayer name contains invalid CAD characters: {options.LayerName}");
             return;
         }
 

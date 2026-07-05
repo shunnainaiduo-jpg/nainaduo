@@ -29,14 +29,21 @@ if (-not (Test-Path -LiteralPath $bundleSource)) {
 }
 
 if ([string]::IsNullOrWhiteSpace($AutoCADInstallDir)) {
-    $candidate = Join-Path $env:ProgramFiles 'Autodesk\AutoCAD 2020'
-    if ((Test-Path -LiteralPath $candidate) -and (Test-Path -LiteralPath (Join-Path $candidate 'AcMgd.dll'))) {
-        $AutoCADInstallDir = $candidate
+    $candidates = @(
+        (Join-Path $env:ProgramFiles 'Autodesk\AutoCAD 2020'),
+        'C:\Autodesk\AutoCAD_2020_Simplified_Chinese_Win_64bit_dlm\x64\acad\PF\Root'
+    )
+
+    foreach ($candidate in $candidates) {
+        if ((Test-Path -LiteralPath $candidate) -and (Test-Path -LiteralPath (Join-Path $candidate 'AcMgd.dll'))) {
+            $AutoCADInstallDir = $candidate
+            break
+        }
     }
 }
 
 if ([string]::IsNullOrWhiteSpace($AutoCADInstallDir)) {
-    throw 'AutoCADInstallDir was not provided and AutoCAD 2020 API DLLs were not found. Pass -AutoCADInstallDir with the folder containing AcMgd.dll, AcDbMgd.dll, and AcCoreMgd.dll.'
+    throw 'AutoCADInstallDir was not provided and AutoCAD 2018-2024 API DLLs were not found. Pass -AutoCADInstallDir with the folder containing AcMgd.dll, AcDbMgd.dll, and AcCoreMgd.dll.'
 }
 
 foreach ($fileName in @('AcMgd.dll', 'AcDbMgd.dll', 'AcCoreMgd.dll')) {
@@ -95,4 +102,4 @@ if (-not (Test-Path -LiteralPath $installerExe)) {
 }
 
 Move-Item -LiteralPath $installerExe -Destination $cad2020InstallerExe -Force
-"CAD 2020 installer created: $cad2020InstallerExe"
+"CAD 2018-2024 installer created: $cad2020InstallerExe"

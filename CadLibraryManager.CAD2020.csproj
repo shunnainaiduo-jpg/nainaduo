@@ -13,11 +13,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="installer\**\*.cs" />
+    <Compile Remove="gstarcad\**\*.cs" />
+    <EmbeddedResource Remove="installer\**\*" />
+    <EmbeddedResource Remove="gstarcad\**\*" />
+    <None Remove="installer\**\*" />
+    <None Remove="gstarcad\**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Include="src\**\*.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="LiteDB" Version="5.0.21" />
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
 
     <Reference Include="System" />
     <Reference Include="System.Core" />
